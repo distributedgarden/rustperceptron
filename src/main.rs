@@ -60,7 +60,8 @@ fn perceptron_learning_algorithm(
     mut weights: [f64; 3],
     epoch: i32,
 ) -> [f64; 3] {
-    for _iteration in 0..epoch {
+    for iteration in 0..epoch {
+        println!("[iteration {}]", iteration);
         weights = perceptron(inputs, target, eta, weights);
     }
 
