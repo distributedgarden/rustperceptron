@@ -1,6 +1,7 @@
+use std::env;
 use std::f64::consts::E;
 
-fn activity_function(weights: [f64; 3], inputs: [f64; 3]) -> f64 {
+fn activity_function(weights: &Vec<f64>, inputs: &Vec<f64>) -> f64 {
     let mut summation = 0.0;
     for index in 0..weights.len() {
         summation += weights[index] * inputs[index];
@@ -16,13 +17,13 @@ fn activation_function(value: f64) -> f64 {
 }
 
 fn weight_function(
-    weights: [f64; 3],
+    weights: Vec<f64>,
     eta: f64,
     target: f64,
     activation_output: f64,
-    inputs: [f64; 3],
-) -> [f64; 3] {
-    let mut updated_weights: [f64; 3] = [0.0, 0.0, 0.0];
+    inputs: &Vec<f64>,
+) -> Vec<f64> {
+    let mut updated_weights: Vec<f64> = vec![0.0; weights.len()];
     let end: usize = weights.len() - 1;
 
     for index in 0..end {
@@ -33,52 +34,81 @@ fn weight_function(
     }
 
     let bias: f64 = weights[end] + (target - activation_output);
-    updated_weights[2] = bias;
+    updated_weights[end] = bias;
 
     return updated_weights;
 }
 
-fn perceptron(inputs: [f64; 3], target: f64, eta: f64, mut weights: [f64; 3]) -> [f64; 3] {
-    let activity_output: f64 = activity_function(weights, inputs);
+fn perceptron(inputs: &Vec<f64>, target: f64, eta: f64, mut weights: Vec<f64>) -> Vec<f64> {
+    let activity_output: f64 = activity_function(&weights, &inputs);
     let activation_output: f64 = activation_function(activity_output);
 
     println!(
         "target: {}, activity_output: {}, activation_output: {}",
         target, activity_output, activation_output
     );
-    println!("weights: {:?}", weights);
+    println!("weights: {:?}", &weights);
     if activation_output != target {
-        weights = weight_function(weights, eta, target, activation_output, inputs);
+        weights = weight_function(weights, eta, target, activation_output, &inputs);
     }
 
     return weights;
 }
 
 fn perceptron_learning_algorithm(
-    inputs: [f64; 3],
-    target: f64,
+    inputs: &Vec<Vec<f64>>,
+    targets: &Vec<f64>,
     eta: f64,
-    mut weights: [f64; 3],
+    mut weights: Vec<f64>,
     epoch: i32,
-) -> [f64; 3] {
+) -> Vec<f64> {
     for iteration in 0..epoch {
         println!("[iteration {}]", iteration);
-        weights = perceptron(inputs, target, eta, weights);
+
+        let end: usize = targets.len();
+        for index in 0..end {
+            weights = perceptron(&inputs[index], targets[index], eta, weights);
+        }
     }
 
     return weights;
 }
 
 fn main() {
-    // includes additional value for bias
-    let inputs: [f64; 3] = [1.0, 0.0, 1.0];
-    let target: f64 = 0.8;
-    let eta: f64 = 0.01;
-    let epoch: i32 = 20;
+    let args: Vec<String> = env::args().collect();
 
-    // includes [w0, w1, bias]
-    let mut weights: [f64; 3] = [1.0, 1.0, 0.01];
+    let learn = &args[1];
 
-    weights = perceptron_learning_algorithm(inputs, target, eta, weights, epoch);
-    println!("{:?}", weights);
+    if learn == "single" {
+        // includes additional value for bias
+        let inputs: Vec<Vec<f64>> = vec![vec![1.0, 0.0, 1.0]];
+        let targets: Vec<f64> = vec![0.8];
+        let eta: f64 = 0.01;
+        let epoch: i32 = 20;
+
+        // includes [w0, w1, bias]
+        let mut weights: Vec<f64> = vec![1.0, 1.0, 0.01];
+
+        weights = perceptron_learning_algorithm(&inputs, &targets, eta, weights, epoch);
+        println!("{:?}", &weights);
+    }
+
+    if learn == "or" {
+        // includes additional value for bias
+        let inputs: Vec<Vec<f64>> = vec![
+            vec![0.0, 0.0, 1.0],
+            vec![0.0, 1.0, 1.0],
+            vec![1.0, 0.0, 1.0],
+            vec![1.0, 1.0, 1.0],
+        ];
+        let targets: Vec<f64> = vec![0.0, 1.0, 1.0, 1.0];
+        let eta: f64 = 0.01;
+        let epoch: i32 = 50;
+
+        // includes [w0, w1, bias]
+        let mut weights: Vec<f64> = vec![1.0, 1.0, 0.01];
+
+        weights = perceptron_learning_algorithm(&inputs, &targets, eta, weights, epoch);
+        println!("{:?}", &weights);
+    }
 }
