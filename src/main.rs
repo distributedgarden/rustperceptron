@@ -23,15 +23,16 @@ fn weight_function(
     inputs: [f64; 3],
 ) -> [f64; 3] {
     let mut updated_weights: [f64; 3] = [0.0, 0.0, 0.0];
+    let end: usize = weights.len() - 1;
 
-    for index in 0..2 {
+    for index in 0..end {
         let weight_delta: f64 = (eta * (target - activation_output)) * inputs[index];
         let weight: f64 = weights[index] + weight_delta;
 
         updated_weights[index] = weight;
     }
 
-    let bias: f64 = weights[2] + (target - activation_output);
+    let bias: f64 = weights[end] + (target - activation_output);
     updated_weights[2] = bias;
 
     return updated_weights;
