@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::env;
 use std::f64::consts::E;
 
@@ -104,6 +105,10 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let learn = &args[1];
+    let mut rng = rand::thread_rng();
+
+    // includes [w0, w1, bias]
+    let mut weights: Vec<f64> = vec![rng.gen(), rng.gen(), 0.01];
 
     if learn == "single" {
         // includes additional value for bias
@@ -112,9 +117,6 @@ fn main() {
         let eta: f64 = 0.01;
         let epoch: i32 = 20;
         let activation_threshold: f64 = 1.0;
-
-        // includes [w0, w1, bias]
-        let mut weights: Vec<f64> = vec![1.0, 1.0, 0.01];
 
         weights = perceptron_learning_algorithm(
             &inputs,
@@ -141,9 +143,6 @@ fn main() {
         let epoch: i32 = 50;
         let activation_threshold: f64 = 0.05;
 
-        // includes [w0, w1, bias]
-        let mut weights: Vec<f64> = vec![1.0, 1.0, 0.01];
-
         weights = perceptron_learning_algorithm(
             &inputs,
             &targets,
@@ -168,9 +167,6 @@ fn main() {
         let eta: f64 = 0.01;
         let epoch: i32 = 50;
         let activation_threshold: f64 = 0.05;
-
-        // includes [w0, w1, bias]
-        let mut weights: Vec<f64> = vec![1.0, 1.0, 0.01];
 
         weights = perceptron_learning_algorithm(
             &inputs,
