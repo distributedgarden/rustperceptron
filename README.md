@@ -7,5 +7,5 @@
 - `cargo run`
 
 ## todo
-- [] learn truthtable
+- [x] learn truthtable
 - [] multi-layer perceptron
